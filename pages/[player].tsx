@@ -6,7 +6,7 @@ const Board = () => {
   const router = useRouter();
   const { player } = router.query;
   const [user, setUser] = useState('');
-  const [board, setBoard] = useState([[], ["red"], ["blue", "red"], ["blue", "red", "red"], ["blue"], [], []]);
+  const [board, setBoard] = useState<string[][]>([[], [], [], [], [], [], []]);
 
   useEffect(() => {
     if(typeof window !== 'undefined') {
