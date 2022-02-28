@@ -1,9 +1,25 @@
-html,
-body {
+* {
+  box-sizing: border-box;
   padding: 0;
   margin: 0;
 }
 
-* {
-  box-sizing: border-box;
+body {
+  font-size: calc(10px + 0.33vw);
+  -webkit-font-smoothing: antialiased;
+}
+
+.piece {
+  margin-bottom: .25rem;
+	width: 5rem;
+	height: 5rem;
+	border-radius: 50%;
+}
+
+.red {
+	background-color: red;
+}
+
+.blue {
+	background-color: blue;
 }

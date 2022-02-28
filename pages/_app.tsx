@@ -8,6 +8,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Head>
         <title>Connect Four</title>
         <meta name="description" content="Leader 4: Made by Rayed" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Component {...pageProps} />
