@@ -1,25 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap');
+
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  font-family: 'Major Mono Display', monospace;
 }
 
 body {
   font-size: calc(10px + 0.33vw);
   -webkit-font-smoothing: antialiased;
+  background-color: #18181b;
 }
 
 .piece {
-  margin-bottom: .25rem;
-	width: 5rem;
-	height: 5rem;
+  margin-bottom: .7rem;
+	width: 4.5rem;
+	height: 4.5rem;
 	border-radius: 50%;
 }
 
 .red {
-	background-color: red;
+	background-color: #ef4444;
 }
 
 .blue {
-	background-color: blue;
+	background-color: #3b82f6;
+}
+
+.footer {
+	width: 100%;
+	position: fixed;
+	bottom: 0pt;
 }

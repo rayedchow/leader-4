@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '../styles/Board.module.css';
 
 const Board = () => {
@@ -32,6 +32,14 @@ const Board = () => {
 
   return (
     <div className={styles.main}>
+      <div className={styles.game}>
+        <div className={styles.header}>
+          {user} vs {player}
+        </div>
+        <div className={styles.status}>
+          your turn
+        </div>
+      </div>
       <div className={styles.board}>
         {board.map((column, i) => 
           <div key={`column-${i}`} className={styles.column} onClick={() => onBoardClick(i)}>
