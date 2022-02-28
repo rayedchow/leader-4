@@ -6,7 +6,7 @@ const Board = () => {
   const router = useRouter();
   const { player } = router.query;
   const [user, setUser] = useState('');
-  const [board, setBoard] = useState([[], ["red"], ["blue", "red"], ["blue", "red", "red"], ["red", "blue", "red", "red"], [], []].reverse());
+  const [board, setBoard] = useState([[], ["red"], ["blue", "red"], ["blue", "red", "red"], ["blue"], [], []]);
 
   useEffect(() => {
     if(typeof window !== 'undefined') {
@@ -66,7 +66,6 @@ const checkBoard = (board: string[][], x: number, y: number, color: string): str
     if(stack === 4) return color;
   }
 
-  console.log('1')
   stack = 0;
   // checking m=1
   let [x2, y2] = [x-y, 0];
@@ -75,9 +74,7 @@ const checkBoard = (board: string[][], x: number, y: number, color: string): str
     else stack = 0;
     if(stack === 4) return color;
     x2++; y2++;
-    console.log(x2, y2);
   }
-  console.log('2')
 
   stack = 0;
   // checking m=-1
