@@ -32,4 +32,10 @@ body {
 	width: 100%;
 	position: fixed;
 	bottom: 0pt;
+	color: #e2e8f0;
+  font-size: 1.1rem;
+  text-align: center;
+  font-style: oblique;
+  margin-bottom: 2vh;
+  letter-spacing: .4vw;
 }
