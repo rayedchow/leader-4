@@ -80,6 +80,9 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
       globalX = i;
       return newBoard;
     });
+    const tmpBoard = board;
+    tmpBoard[i].push('blue');
+    
   }
 
   return (
