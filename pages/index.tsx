@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import io, { Socket } from 'socket.io-client'
 
 const dev = process.env.NODE_ENV !== 'production';
-export const server = dev ? 'http://localhost:3000' : '';
+export const server = dev ? 'http://localhost:3000' : 'https://leader-4.herokuapp.com/';
 let socket: Socket;
 
 const Home: NextPage = ({ socketCreated }: InferGetServerSidePropsType<GetServerSideProps>) => {
