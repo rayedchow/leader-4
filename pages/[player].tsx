@@ -29,16 +29,14 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
     socket = io();
     socket.on('connect', () => {
       console.log('socket connected from client');
-      () => socket.emit('game-connect', { game: `${user}-${player}`, turn: Math.random() < .5 });
+      socket.emit('game-connect', { game: `${user}-${player}`, turn: Math.random() < .5 });
     });
     socket.on('game-connection', (data: { game: string, turn: boolean }) => {
-      console.log('hello');
       if(data.game !== `${player}-${user}`) return;
       setStatus(data.turn ? 2 : 1);
     });
     socket.on('player-move', (data: moveData) => {
       if(data.game !== `${player}-${user}`) return;
-      console.log(data);
       onPlayerMove(data);
     });
   }
