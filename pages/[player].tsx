@@ -4,6 +4,7 @@ import io, { Socket } from 'socket.io-client';
 import styles from '../styles/Board.module.css';
 
 let socket: Socket;
+let globalX: number = -1;
 
 export interface moveData {
   x: number
@@ -23,6 +24,12 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
   }
 
   useEffect(() => { initSocket() }, []);
+  useEffect(() => {
+    if(status === 2) {
+      const winMove = checkBoard(board, globalX, board[globalX].length, 'blue');
+      socket.emit('user-move', { x: global, y: board[globalX].length, game: `${user}-${player}`, winMove });
+    }
+  }, [board]);
   
   const initSocket = async () => {
     await fetch('/api/socket');
@@ -35,6 +42,10 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
       if(data.game !== `${player}-${user}`) return;
       setStatus(data.turn ? 2 : 1);
       socket.emit('connection-receive', { game: `${user}-${player}`, turn: data.turn });
+    });
+    socket.on('receive-connect', (data: { game: string, turn: boolean }) => {
+      if(data.game !== `${player}-${user}`) return;
+      setStatus(data.turn ? 1 : 2);
     });
     socket.on('player-move', (data: moveData) => {
       if(data.game !== `${player}-${user}`) return;
@@ -49,27 +60,24 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
           return currBoard[j].concat('red');
         } else return column;
       });
+      setStatus(1);
       return newBoard;
     });
-    setStatus(1);
   }
 
   const onBoardClick = (i: number) => {
     if(board[i].length >= 6) return;
     if(status !== 1) return;
-    let winMove;
-    setBoard(currBoard => {
+    setBoard((currBoard) => {
       let newBoard: string[][] = currBoard.map((column, j) => {
         if(i === j) {
           return currBoard[j].concat('blue');
         } else return column;
       });
-      winMove = checkBoard(newBoard, i, board[i].length, 'blue');
+      setStatus(2);
+      globalX = i;
       return newBoard;
     });
-    console.log(winMove);
-    socket.emit('user-move', { x: i, y: board[i].length, game: `${user}-${player}`, winMove: false });
-    setStatus(2);
   }
 
   return (
