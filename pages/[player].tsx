@@ -47,32 +47,19 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
   }
 
   const onPlayerMove = (data: moveData) => {
-    setBoard(currBoard => {
-      let newBoard: string[][] = currBoard.map((column, j) => {
-        if(data.x === j) {
-          return currBoard[j].concat('red');
-        } else return column;
-      });
-      return newBoard;
-    });
+    const tmpBoard: string[][] = board;
+    tmpBoard[data.x].push('red');
+    console.log(data.winMove);
     setStatus(1);
   }
 
   const onBoardClick = (i: number) => {
     if(board[i].length >= 6) return;
     if(status !== 1) return;
-    // setBoard((currBoard) => {
-    //   let newBoard: string[][] = currBoard.map((column, j) => {
-    //     if(i === j) {
-    //       return currBoard[j].concat('blue');
-    //     } else return column;
-    //   });
-    //   return newBoard;
-    // });
-    const tmpBoard: string[][] = [...board];
+    const tmpBoard: string[][] = board;
     tmpBoard[i].push('blue');
-    const winMove = checkBoard(tmpBoard, i, board[i].length, 'blue');
-    socket.emit('user-move', { x: i, y: board[i].length, game: `${user}-${player}`, winMove });
+    const winMove = checkBoard(tmpBoard, i, tmpBoard[i].length, 'blue');
+    socket.emit('user-move', { x: i, y: tmpBoard[i].length, game: `${user}-${player}`, winMove });
     setStatus(2);
   }
 
