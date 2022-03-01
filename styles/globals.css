@@ -43,3 +43,11 @@ body {
 .header {
 	font-size: 2.5rem;
 }
+
+.status-0 {
+  color: #fde047;
+}
+
+.status-1 {
+  color: #0ea5e9;
+}
