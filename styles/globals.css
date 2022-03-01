@@ -39,3 +39,7 @@ body {
   margin-bottom: 2vh;
   letter-spacing: .4vw;
 }
+
+.header {
+	font-size: 2.5rem;
+}

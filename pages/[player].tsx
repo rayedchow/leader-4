@@ -34,11 +34,13 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
     socket.on('game-connection', (data: { game: string, turn: boolean }) => {
       if(data.game !== `${player}-${user}`) return;
       setStatus(data.turn ? 2 : 1);
+      setBoard([[], [], [], [], [], [], []]);
       socket.emit('connection-receive', { game: `${user}-${player}`, turn: data.turn });
     });
     socket.on('receive-connect', (data: { game: string, turn: boolean }) => {
       if(data.game !== `${player}-${user}`) return;
       setStatus(data.turn ? 1 : 2);
+      setBoard([[], [], [], [], [], [], []]);
     });
     socket.on('player-move', (data: moveData) => {
       if(data.game !== `${player}-${user}`) return;
@@ -49,8 +51,7 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
   const onPlayerMove = (data: moveData) => {
     const tmpBoard: string[][] = board;
     tmpBoard[data.x].push('red');
-    console.log(data.winMove);
-    setStatus(1);
+    setStatus(data.winMove ? 3 : 1);
   }
 
   const onBoardClick = (i: number) => {
@@ -58,15 +59,16 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
     if(status !== 1) return;
     const tmpBoard: string[][] = board;
     tmpBoard[i].push('blue');
-    const winMove = checkBoard(tmpBoard, i, tmpBoard[i].length, 'blue');
-    socket.emit('user-move', { x: i, y: tmpBoard[i].length, game: `${user}-${player}`, winMove });
-    setStatus(2);
+    const winMove = checkBoard(tmpBoard, i, tmpBoard[i].length-1, 'blue');
+    console.log(winMove, i, tmpBoard[i].length);
+    socket.emit('user-move', { x: i, y: tmpBoard[i].length-1, game: `${user}-${player}`, winMove });
+    setStatus(winMove ? 4 : 2);
   }
 
   return (
     <div className={styles.main}>
       <div className={styles.game}>
-        <div className={styles.header}>
+        <div className={`header status-${status}`}>
           {user} vs {player}
         </div>
         <div className={styles.status}>
@@ -79,7 +81,7 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
               case 2:
                 return "opponent's turn";
               case 3:
-                return "L you're hot garbo";
+                return "L you hot garbo";
               case 4:
                 return "W you still hot garbo tho";
             }
