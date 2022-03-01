@@ -28,8 +28,8 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
     console.log('woah');
     // if(status === 2) {
     //   console.log(globalX);
-    //   const winMove = checkBoard(board, globalX, board[globalX].length, 'blue');
-    //   socket.emit('user-move', { x: global, y: board[globalX].length, game: `${user}-${player}`, winMove });
+      const winMove = checkBoard(board, globalX, board[globalX].length, 'blue');
+      socket.emit('user-move', { x: global, y: board[globalX].length, game: `${user}-${player}`, winMove });
     // }
   }, [board, status]);
   
@@ -62,9 +62,9 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
           return currBoard[j].concat('red');
         } else return column;
       });
-      setStatus(1);
       return newBoard;
     });
+    setStatus(1);
   }
 
   const onBoardClick = (i: number) => {
@@ -76,13 +76,13 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
           return currBoard[j].concat('blue');
         } else return column;
       });
-      setStatus(2);
-      globalX = i;
       return newBoard;
     });
     const tmpBoard = board;
     tmpBoard[i].push('blue');
-    
+    const winMove = checkBoard(tmpBoard, globalX, board[i].length, 'blue');
+    socket.emit('user-move', { x: global, y: board[i].length, game: `${user}-${player}`, winMove });
+    setStatus(2);
   }
 
   return (
