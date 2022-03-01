@@ -25,11 +25,13 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
 
   useEffect(() => { initSocket() }, []);
   useEffect(() => {
-    if(status === 2) {
-      const winMove = checkBoard(board, globalX, board[globalX].length, 'blue');
-      socket.emit('user-move', { x: global, y: board[globalX].length, game: `${user}-${player}`, winMove });
-    }
-  }, [board]);
+    console.log('woah');
+    // if(status === 2) {
+    //   console.log(globalX);
+    //   const winMove = checkBoard(board, globalX, board[globalX].length, 'blue');
+    //   socket.emit('user-move', { x: global, y: board[globalX].length, game: `${user}-${player}`, winMove });
+    // }
+  }, [board, status]);
   
   const initSocket = async () => {
     await fetch('/api/socket');
