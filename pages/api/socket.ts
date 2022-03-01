@@ -9,7 +9,10 @@ const socketHandler = (req: NextApiRequest, res: any) => {
 		io.on('connection', socket => {
 			console.log('socket connection from server');
 
-			socket.on('game-connect', (data) => socket.broadcast.emit('game-connection', data));
+			socket.on('game-connect', (data) => {
+				console.log(data)
+				socket.broadcast.emit('game-connection', data)
+			});
 			socket.on('user-move', (data: moveData) => socket.broadcast.emit('player-move', data));
 		});
 
