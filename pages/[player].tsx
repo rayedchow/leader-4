@@ -4,7 +4,6 @@ import io, { Socket } from 'socket.io-client';
 import styles from '../styles/Board.module.css';
 
 let socket: Socket;
-let globalX: number = -1;
 
 export interface moveData {
   x: number
@@ -24,14 +23,6 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
   }
 
   useEffect(() => { initSocket() }, []);
-  useEffect(() => {
-    console.log('woah');
-    // if(status === 2) {
-    //   console.log(globalX);
-      const winMove = checkBoard(board, globalX, board[globalX].length, 'blue');
-      socket.emit('user-move', { x: global, y: board[globalX].length, game: `${user}-${player}`, winMove });
-    // }
-  }, [board, status]);
   
   const initSocket = async () => {
     await fetch('/api/socket');
