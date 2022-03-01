@@ -34,6 +34,7 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
     socket.on('game-connection', (data: { game: string, turn: boolean }) => {
       if(data.game !== `${player}-${user}`) return;
       setStatus(data.turn ? 2 : 1);
+      socket.emit('connection-receive', { game: `${user}-${player}`, turn: data.turn });
     });
     socket.on('player-move', (data: moveData) => {
       if(data.game !== `${player}-${user}`) return;

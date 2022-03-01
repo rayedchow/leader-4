@@ -10,6 +10,7 @@ const socketHandler = (req: NextApiRequest, res: any) => {
 			console.log('socket connection from server');
 
 			socket.on('game-connect', (data) => socket.broadcast.emit('game-connection', data));
+			socket.on('connection-receive', (data) => socket.broadcast.emit('game-connection', data));
 			socket.on('user-move', (data: moveData) => socket.broadcast.emit('player-move', data));
 		});
 
