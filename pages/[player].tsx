@@ -49,8 +49,14 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
   }
 
   const onPlayerMove = (data: moveData) => {
-    const tmpBoard: string[][] = board;
-    tmpBoard[data.x].push('red');
+    setBoard(currBoard => {
+      let newBoard: string[][] = currBoard.map((column, j) => {
+        if(data.x === j) {
+          return currBoard[j].concat('red');
+        } else return column;
+      });
+      return newBoard;
+    });
     setStatus(data.winMove ? 3 : 1);
   }
 
