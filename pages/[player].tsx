@@ -61,18 +61,18 @@ const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSidePr
   const onBoardClick = (i: number) => {
     if(board[i].length >= 6) return;
     if(status !== 1) return;
-    setBoard((currBoard) => {
-      let newBoard: string[][] = currBoard.map((column, j) => {
-        if(i === j) {
-          return currBoard[j].concat('blue');
-        } else return column;
-      });
-      return newBoard;
-    });
-    const tmpBoard = board;
+    // setBoard((currBoard) => {
+    //   let newBoard: string[][] = currBoard.map((column, j) => {
+    //     if(i === j) {
+    //       return currBoard[j].concat('blue');
+    //     } else return column;
+    //   });
+    //   return newBoard;
+    // });
+    const tmpBoard: string[][] = [...board];
     tmpBoard[i].push('blue');
-    const winMove = checkBoard(tmpBoard, globalX, board[i].length, 'blue');
-    socket.emit('user-move', { x: global, y: board[i].length, game: `${user}-${player}`, winMove });
+    const winMove = checkBoard(tmpBoard, i, board[i].length, 'blue');
+    socket.emit('user-move', { x: i, y: board[i].length, game: `${user}-${player}`, winMove });
     setStatus(2);
   }
 
