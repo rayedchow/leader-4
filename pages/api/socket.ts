@@ -1,14 +1,15 @@
 import { Server} from 'socket.io';
 import type { NextApiRequest } from 'next'
+import { moveData } from '../[player]';
 
 const socketHandler = (req: NextApiRequest, res: any) => {
 	if(!res.socket.server.io) {
 		const io = new Server(res.socket.server);
 		
 		io.on('connection', socket => {
-			console.log('lesa goo');
+			console.log('socket connection from server');
 
-			socket.on('disconnect', () => console.log('nooo'));
+			socket.on('user-move', (data: moveData) => socket.broadcast.emit('player-move', data));
 		});
 
 		res.socket.server.io = io;

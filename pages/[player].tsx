@@ -1,59 +1,95 @@
 import { GetServerSideProps, InferGetServerSidePropsType, NextPage } from 'next';
-import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
-import { server } from '.';
 import styles from '../styles/Board.module.css';
 
 let socket: Socket;
 
-const Board: NextPage = ({ socketCreated }: InferGetServerSidePropsType<GetServerSideProps>) => {
-  const router = useRouter();
-  const { player } = router.query;
+export interface moveData {
+  x: number
+  y: number
+  game: string
+  winMove: boolean
+}
+
+const Board: NextPage = ({ player }: InferGetServerSidePropsType<GetServerSideProps>) => {
   const [user, setUser] = useState('');
   const [board, setBoard] = useState<string[][]>([[], [], [], [], [], [], []]);
-  const [turn, setTurn] = useState(Math.random() < 0.5);
+  const [status, setStatus] = useState<0 | 1 | 2 | 3 | 4>(0);
 
-  useEffect(() => {
-    if(typeof window !== 'undefined') {
-        const id = window.localStorage.getItem('user');
-        if(!id) return;
-        setUser(id);
-    }
-    initSocket();
-  }, []);
+  if((typeof window !== 'undefined') && (user === '')) {
+      const id = window.localStorage.getItem('user');
+      if(id) setUser(id);
+  }
+
+  useEffect(() => { initSocket() }, []);
   
-  const initSocket = () => {
-    if(!socketCreated) return;
+  const initSocket = async () => {
+    await fetch('/api/socket');
     socket = io();
     socket.on('connect', () => console.log('socket connected from client'));
-    socket.on('player-move', data => console.log(data));
+    socket.on('game-connection', (data: { game: string, turn: boolean }) => {
+      if(game !== `${player}-${user}`) return;
+      
+    })
+    socket.on('player-move', (data: moveData) => {
+      if(data.game !== `${player}-${user}`) return;
+      console.log(data);
+      onPlayerMove(data);
+    });
+  }
+
+  const onPlayerMove = (data: moveData) => {
+    setBoard(currBoard => {
+      let newBoard: string[][] = currBoard.map((column, j) => {
+        if(data.x === j) {
+          return currBoard[j].concat('red');
+        } else return column;
+      });
+      return newBoard;
+    });
+    setStatus(1);
   }
 
   const onBoardClick = (i: number) => {
     if(board[i].length >= 6) return;
-    if(!turn) return;
+    if(status !== 1) return;
+    let winMove;
     setBoard(currBoard => {
       let newBoard: string[][] = currBoard.map((column, j) => {
         if(i === j) {
           return currBoard[j].concat('blue');
         } else return column;
       });
-      console.log(checkBoard(newBoard, i, board[i].length, 'blue'));
-      socket.emit('user-move', { x: i, y: board[i].length, winMove: false });
+      winMove = checkBoard(newBoard, i, board[i].length, 'blue');
       return newBoard;
     });
-    setTurn(false);
+    console.log(winMove);
+    socket.emit('user-move', { x: i, y: board[i].length, game: `${user}-${player}`, winMove: false });
+    setStatus(2);
   }
 
   return (
     <div className={styles.main}>
       <div className={styles.game}>
         <div className={styles.header}>
-          you vs {player}
+          {user} vs {player}
         </div>
         <div className={styles.status}>
-          {turn ? 'your turn' : "opponent's turn"}
+          {(() => {
+            switch(status) {
+              case 0:
+                return 'waiting...';
+              case 1:
+                return 'your turn';
+              case 2:
+                return "opponent's turn";
+              case 3:
+                return "L you're hot garbo";
+              case 4:
+                return "W you still hot garbo tho";
+            }
+          })()}
         </div>
       </div>
       <div className={styles.board}>
@@ -70,7 +106,7 @@ const Board: NextPage = ({ socketCreated }: InferGetServerSidePropsType<GetServe
   )
 }
 
-const checkBoard = (board: string[][], x: number, y: number, color: string): string | null => {
+const checkBoard = (board: string[][], x: number, y: number, color: string): boolean => {
   let stack = 0;
   
   // checking vertically
@@ -78,7 +114,7 @@ const checkBoard = (board: string[][], x: number, y: number, color: string): str
     for(let i = 0; i < board[x].length; i++) {
       if(board[x][i] === color) stack++;
       else stack = 0;
-      if(stack === 4) return color;
+      if(stack === 4) return true;
     }
   }
 
@@ -87,7 +123,7 @@ const checkBoard = (board: string[][], x: number, y: number, color: string): str
   for(let i = 0; i < board.length; i++) {
     if(board[i][y] === color) stack++;
     else stack = 0;
-    if(stack === 4) return color;
+    if(stack === 4) return true;
   }
 
   stack = 0;
@@ -96,7 +132,7 @@ const checkBoard = (board: string[][], x: number, y: number, color: string): str
   while((x2 < 6) && (y2 < 5)) {
     if(board[x2] && board[x2][y2] === color) stack++;
     else stack = 0;
-    if(stack === 4) return color;
+    if(stack === 4) return true;
     x2++; y2++;
   }
 
@@ -106,16 +142,15 @@ const checkBoard = (board: string[][], x: number, y: number, color: string): str
   while((x3 > 1) && (y3 < 5)) {
     if(board[x3] && board[x3][y3] === color) stack++;
     else stack = 0;
-    if(stack === 4) return color;
+    if(stack === 4) return true;
     x3--; y3++;
   }
 
-  return null;
+  return false;
 }
 
 export const getServerSideProps: GetServerSideProps = async(context) => {
-  await fetch(`${server}/api/socket`);
-  return { props: { socketCreated: true } };
+  return { props: { player: context.query.player } };
 }
 
 export default Board;
